@@ -1,6 +1,6 @@
 # Compose Multiplatform Application
 
-[Live Website](https://emami-114.github.io/portfolio/)
+[Live Website](https://emami-114.github.io/emami-portfolio/)
 
 ## Before running!
 
