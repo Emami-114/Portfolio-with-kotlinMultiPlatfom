@@ -57,7 +57,7 @@ fun MySkills(maxWidth: Dp, isNotCompact: Boolean) {
             )
             SkillsItem(
                 modifier = Modifier.weight(1f), isNotCompact,
-                title = "kotlin-icon.png",
+                title = "Kotlin",
                 painterResource = "kotlin-icon.png"
             )
 

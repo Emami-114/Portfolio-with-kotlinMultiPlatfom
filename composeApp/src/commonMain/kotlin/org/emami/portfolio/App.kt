@@ -17,6 +17,8 @@ import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -32,7 +34,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -56,6 +60,8 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalViewConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
@@ -68,202 +74,139 @@ import org.emami.portfolio.screen.MySkills
 import org.emami.portfolio.theme.AppTheme
 import org.jetbrains.compose.resources.painterResource
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun App() = AppTheme {
     val scrollState = rememberScrollState()
     val coroutineScope = rememberCoroutineScope()
+
     BoxWithConstraints(modifier = Modifier.animateContentSize()) {
         val scope = this
         val maxWidth = scope.maxWidth
         val isNotCompact = maxWidth > 750.dp
-        Column(
+        LazyColumn(
             modifier = Modifier.fillMaxSize()
-
-                .verticalScroll(scrollState).draggable(orientation = Orientation.Vertical,
-                    state = rememberDraggableState { delta ->
-                        coroutineScope.launch {
-                            scrollState.scrollBy(-delta)
-                        }
-                    }),
+//                .verticalScroll(scrollState).draggable(orientation = Orientation.Vertical,
+//                    state = rememberDraggableState { delta ->
+//                        coroutineScope.launch {
+//                            scrollState.scrollBy(-delta)
+//                        }
+//                    })
+            ,
             verticalArrangement = Arrangement.spacedBy(30.dp)
         ) {
-            Column(
-                modifier = Modifier.padding(if (isNotCompact) 20.dp else 50.dp)
-                    .windowInsetsPadding(WindowInsets.safeDrawing),
-            ) {
-                AboutMe(maxWidth, isNotCompact)
-                Spacer(modifier = Modifier.height(if (isNotCompact) 200.dp else 100.dp))
-                MySkills(maxWidth = maxWidth, isNotCompact)
+            item {
+                Column(
+                    modifier = Modifier.padding(if (isNotCompact) 20.dp else 50.dp)
+                        .windowInsetsPadding(WindowInsets.safeDrawing),
+                ) {
+                    AboutMe(maxWidth, isNotCompact)
+                    Spacer(modifier = Modifier.height(if (isNotCompact) 200.dp else 100.dp))
+                    MySkills(maxWidth = maxWidth, isNotCompact)
+                    Spacer(modifier = Modifier.height(if (isNotCompact) 200.dp else 100.dp))
+                }
+            }
+            item {
+                val itemSize: Dp = 400.dp
+                FlowRow(modifier = Modifier.fillMaxSize(),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalArrangement = Arrangement.spacedBy(20.dp),
+                    maxItemsInEachRow = 7
+                ) {
+                    MyPortfolioItem(
+                        title = "Portfolio with KMP",
+                        painterResource = "portfolio-web.png",
+                        modifier = Modifier.size(itemSize),
+                        listIcon = listOf(
+                            "android.png", "kotlin.png","iOS.png"
+                        ),
+                        linkTitle = "Github",
+                        linkUrl = "https://github.com/Emami-114/Portfolio-with-kotlinMultiPlatfom"
+                    )
+                    Spacer(Modifier.width(10.dp))
+                    MyPortfolioItem(
+                        title = "Abschluss Projekt iOS",
+                        painterResource = "biarfood-gift.gif",
+                        modifier = Modifier.size(itemSize),
+                        listIcon = listOf(
+                            "swift.png", "api.png", "firebase.png", "iOS.png"
+                        ),
+                        linkTitle = "Github",
+                        linkUrl = "https://github.com/Emami-114/BiarFoodiphone"
+                    )
+                    Spacer(Modifier.width(10.dp))
+                    MyPortfolioItem(
+                        title = "Abschluss Projekt MacOS",
+                        painterResource = "biarfoodMac-Gift.gif",
+                        modifier = Modifier.size(itemSize),
+                        listIcon = listOf(
+                            "swift.png", "api.png", "firebase.png"
+                        ),
+                        linkTitle = "Github",
+                        linkUrl = "https://github.com/Emami-114/BiarFoodMac"
+                    )
+                    Spacer(Modifier.width(10.dp))
 
-                Spacer(modifier = Modifier.height(if (isNotCompact) 200.dp else 100.dp))
+                    MyPortfolioItem(
+                        title = "Einbürgerungtest",
+                        painterResource = "lebenInDeutschland.gif",
+                        modifier = Modifier.size(itemSize),
+                        listIcon = listOf(
+                            "android.png", "api.png", "kotlin.png"
+                        ),
+                        linkTitle = "Github",
+                        linkUrl = "https://github.com/Emami-114/lebenInDeutschland"
+                    )
+                    Spacer(Modifier.width(10.dp))
 
-                MyPortfolio(isNotCompact, scrollState)
+                    MyPortfolioItem(
+                        title = "Learn App",
+                        painterResource = "learnApp.gif",
+                        modifier = Modifier.size(itemSize),
+                        listIcon = listOf(
+                            "android.png", "api.png", "firebase.png", "kotlin.png"
+                        ),
+                        linkTitle = "Github",
+                        linkUrl = "https://github.com/Emami-114/Abschluss_Projekt_LearnApp_Android-Modul"
+                    )
+                    Spacer(Modifier.width(10.dp))
+
+                    MyPortfolioItem(
+                        title = "Movie App",
+                        painterResource = "Movie_gift.gif",
+                        modifier = Modifier.size(itemSize),
+                        listIcon = listOf(
+                            "android.png", "api.png", "kotlin.png"
+                        ),
+                        linkTitle = "Github",
+                        linkUrl = "https://github.com/Emami-114/tmdb_movie_app_api"
+                    )
+                    Spacer(Modifier.width(10.dp))
+
+                    MyPortfolioItem(
+                        title = "Delivery App UI/Design",
+                        painterResource = "figma-food.png",
+                        modifier = Modifier.size(itemSize),
+                        listIcon = listOf(
+                            "figma.png"
+                        ),
+                        linkTitle = "Behance",
+                        linkUrl = "https://www.behance.net/gallery/158444109/Lebensmittel-Lieferservice-Grocery-Delivery-App"
+                    )
+                    Spacer(Modifier.width(10.dp))
+
+                }
             }
 
-            Spacer(modifier = Modifier.height(50.dp))
-            Footer(isNotCompact)
-
+            item {
+                Spacer(modifier = Modifier.height(50.dp))
+                Footer(isNotCompact)
+            }
         }
 
 
     }
 }
-
-@Composable
-fun MyPortfolio(isNotCompact: Boolean, scrollState: ScrollState) {
-    Text(
-        text = "My Portfolio",
-        fontSize = if (isNotCompact) 70.sp else 50.sp,
-        fontWeight = FontWeight.Bold,
-        textAlign = TextAlign.Center,
-        color = Color.White.copy(alpha = 0.6f),
-        modifier = Modifier.fillMaxWidth()
-    )
-    if (isNotCompact) {
-        Column {
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(50.dp),
-                horizontalArrangement = Arrangement.spacedBy(20.dp)
-            ) {
-                MyPortfolioItem(
-                    title = "Abschluss Projekt iOS",
-                    painterResource = "biarfood-gift.gif",
-                    modifier = Modifier.weight(1f),
-                    listIcon = listOf(
-                        "swift.png", "api.png", "firebase.png", "iOS.png"
-                    ),
-                    linkTitle = "Github",
-                    linkUrl = "https://github.com/Emami-114/BiarFoodiphone"
-                )
-                MyPortfolioItem(
-                    title = "Abschluss Projekt MacOS",
-                    painterResource = "biarfoodMac-Gift.gif",
-                    modifier = Modifier.weight(1f),
-                    listIcon = listOf(
-                        "swift.png", "api.png", "firebase.png"
-                    ),
-                    linkTitle = "Github",
-                    linkUrl = "https://github.com/Emami-114/BiarFoodMac"
-                )
-                MyPortfolioItem(
-                    title = "Einbürgerungtest",
-                    painterResource = "lebenInDeutschland.gif",
-                    modifier = Modifier.weight(1f),
-                    listIcon = listOf(
-                        "android.png", "api.png", "kotlin.png"
-                    ),
-                    linkTitle = "Github",
-                    linkUrl = "https://github.com/Emami-114/lebenInDeutschland"
-                )
-            }
-
-            Spacer(modifier = Modifier.height(30.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(50.dp),
-                horizontalArrangement = Arrangement.spacedBy(20.dp)
-            ) {
-                MyPortfolioItem(
-                    title = "Learn App",
-                    painterResource = "learnApp.gif",
-                    modifier = Modifier.weight(1f),
-                    listIcon = listOf(
-                        "android.png", "api.png", "firebase.png", "kotlin.png"
-                    ),
-                    linkTitle = "Github",
-                    linkUrl = "https://github.com/Emami-114/Abschluss_Projekt_LearnApp_Android-Modul"
-                )
-                MyPortfolioItem(
-                    title = "Movie App",
-                    painterResource = "Movie_gift.gif",
-                    modifier = Modifier.weight(1f),
-                    listIcon = listOf(
-                        "android.png", "api.png", "kotlin.png"
-                    ),
-                    linkTitle = "Github",
-                    linkUrl = "https://github.com/Emami-114/tmdb_movie_app_api"
-                )
-                MyPortfolioItem(
-                    title = "Delivery App UI/Design",
-                    painterResource = "figma-food.png",
-                    modifier = Modifier.weight(1f),
-                    listIcon = listOf(
-                        "figma.png"
-                    ),
-                    linkTitle = "Behance",
-                    linkUrl = "https://www.behance.net/gallery/158444109/Lebensmittel-Lieferservice-Grocery-Delivery-App"
-                )
-            }
-        }
-    } else {
-        Column(
-            modifier = Modifier.fillMaxWidth().padding(vertical =  50.dp),
-            verticalArrangement = Arrangement.spacedBy(20.dp)
-        ) {
-            MyPortfolioItem(
-                title = "Abschluss Projekt iOS",
-                painterResource = "biarfood-gift.gif",
-                modifier = Modifier,
-                listIcon = listOf(
-                    "swift.png", "api.png", "firebase.png", "iOS.png"
-                ),
-                linkTitle = "Github",
-                linkUrl = "https://github.com/Emami-114/BiarFoodiphone"
-            )
-            MyPortfolioItem(
-                title = "Abschluss Projekt MacOS",
-                painterResource = "biarfoodMac-Gift.gif",
-                modifier = Modifier,
-                listIcon = listOf(
-                    "swift.png", "api.png", "firebase.png"
-                ),
-                linkTitle = "Github",
-                linkUrl = "https://github.com/Emami-114/BiarFoodMac"
-            )
-            MyPortfolioItem(
-                title = "Einbürgerungtest",
-                painterResource = "lebenInDeutschland.gif",
-                modifier = Modifier,
-                listIcon = listOf(
-                    "android.png", "api.png", "kotlin.png"
-                ),
-                linkTitle = "Github",
-                linkUrl = "https://github.com/Emami-114/lebenInDeutschland"
-            )
-            MyPortfolioItem(
-                title = "Learn App",
-                painterResource = "learnApp.gif",
-                modifier = Modifier,
-                listIcon = listOf(
-                    "android.png", "api.png", "firebase.png", "kotlin.png"
-                ),
-                linkTitle = "Github",
-                linkUrl = "https://github.com/Emami-114/Abschluss_Projekt_LearnApp_Android-Modul"
-            )
-            MyPortfolioItem(
-                title = "Movie App",
-                painterResource = "Movie_gift.gif",
-                modifier = Modifier,
-                listIcon = listOf(
-                    "android.png", "api.png", "kotlin.png"
-                ),
-                linkTitle = "Github",
-                linkUrl = "https://github.com/Emami-114/tmdb_movie_app_api"
-            )
-            MyPortfolioItem(
-                title = "Delivery App UI/Design",
-                painterResource = "figma-food.png",
-                modifier = Modifier,
-                listIcon = listOf(
-                    "figma.png"
-                ),
-                linkTitle = "Behance",
-                linkUrl = "https://www.behance.net/gallery/158444109/Lebensmittel-Lieferservice-Grocery-Delivery-App"
-            )
-
-        }
-    }
-}
-
 @Composable
 fun MyPortfolioItem(
     title: String,
